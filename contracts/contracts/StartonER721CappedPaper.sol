@@ -1,3 +1,6 @@
+// Extended NFT Collection contract from Starton's ERC721Capped template.
+// This contract allow one to mint from paper, wether with the classic public mint function
+// or through a Paper-only mint function (for example for private sales, an allowlist mint...)
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -52,9 +55,9 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         _safeMint(to, ts);
     }
 
-    
-    // Paper.xyz eligibility function for MintToPaper()
-    function mintToPaperEligibility()
+
+    // Paper.xyz eligibility function for MintToPaper() and safeMint()
+    function mintWithPaperEligibility()
         external
         view
         returns (string memory)
@@ -66,5 +69,16 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         } else {
             return "";
         }
+    }
+
+    // Override safeMint() from StartonERC721Capped to make it Paper.xyz compatible
+    // Warning: MINTER_ROLE is ignored
+    function safeMint(address to) override public {
+        uint256 ts = _tokenIdCounter.current();
+        require(_isMintAllowed);
+        require(ts < _maxSupply, "maxSupply: reached");
+
+        _tokenIdCounter.increment();
+        _safeMint(to, ts);
     }
 }
