@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Modified version of the StartonERC721Capped contract in order to allow inheritance
+// see the original contract: https://github.com/starton-io/smart-contract-templates/blob/master/contracts/StartonERC721Capped.sol
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
