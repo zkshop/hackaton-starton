@@ -12,6 +12,7 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
     using Counters for Counters.Counter;
 
     IPaperKeyManager _paperKeyManager;
+    uint256 private _pricePerToken;
 
     constructor(
         string memory name,
@@ -19,9 +20,11 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         string memory baseUri,
         uint256 tokenMaxSupply,
         address ownerOrMultiSigContract,
+        uint256 pricePerToken,
         address paperKeyManagerAddress
     ) StartonERC721Capped(name, symbol, baseUri, tokenMaxSupply, ownerOrMultiSigContract) {
         _paperKeyManager = IPaperKeyManager(paperKeyManagerAddress);
+        _pricePerToken = pricePerToken;
     }
     
     // onlyPaper modifier to easily restrict multiple different function
@@ -41,15 +44,20 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         require(_paperKeyManager.register(paperKey), "Error registering key");
     }
 
+    function getPricePerToken() view public returns (uint256) {
+        return _pricePerToken;
+    }
+
     // Paper.xyz only mint function
     function mintToPaper(
         address to,
         bytes32 nonce,
         bytes calldata signature
-    ) external onlyPaper(keccak256(abi.encode(to)), nonce, signature) {
+    ) external payable onlyPaper(keccak256(abi.encode(to)), nonce, signature) {
         uint256 ts = _tokenIdCounter.current();
         require(_isMintAllowed);
         require(ts < _maxSupply, "maxSupply: reached");
+        require(msg.value == _pricePerToken, "Invalid value send");
 
         _tokenIdCounter.increment();
         _safeMint(to, ts);
@@ -73,12 +81,20 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
 
     // Override safeMint() from StartonERC721Capped to make it Paper.xyz compatible
     // Warning: MINTER_ROLE is ignored
-    function safeMint(address to) override public {
+    function safeMint(address to) override public payable {
         uint256 ts = _tokenIdCounter.current();
         require(_isMintAllowed);
         require(ts < _maxSupply, "maxSupply: reached");
+        require(msg.value == _pricePerToken, "Invalid value send");
 
         _tokenIdCounter.increment();
         _safeMint(to, ts);
+    }
+    
+    function withdraw(address payable to) external {
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender));
+
+        uint256 balance = address(this).balance;
+        Address.sendValue(to, balance);
     }
 }

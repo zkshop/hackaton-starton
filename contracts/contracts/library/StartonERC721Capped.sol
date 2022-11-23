@@ -46,7 +46,7 @@ contract StartonERC721Capped is ERC721Enumerable, ERC721URIStorage, Pausable, Ac
         _isMintAllowed = false;
     }
 
-    function safeMint(address to) virtual public {
+    function safeMint(address to) virtual public payable {
         require(hasRole(MINTER_ROLE, msg.sender));
         require(_isMintAllowed);
         require(_tokenIdCounter.current() < _maxSupply, "maxSupply: reached");
