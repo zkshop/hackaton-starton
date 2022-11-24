@@ -19,5 +19,8 @@
     "hardhat": "^2.12.2",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1"
+  },
+  "devDependencies": {
+    "plop": "^3.1.1"
   }
 }
