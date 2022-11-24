@@ -8,12 +8,29 @@ import "@paperxyz/contracts/keyManager/IPaperKeyManager.sol";
 
 import "./library/StartonERC721Capped.sol";
 
+/// @title A Paper.xyz-compatible NFT collection
+/// @notice Manage the mint & distribution of an NFT collection, through a private and a public sale.
+/// @dev This contract inherit from the StartonERC721Capped contract from Starton's templates.
+/// It has been slightly modified in order to allow inheritance, and the AccessControl roles has been ignored for the mint functions.
+/// The additional features are the private sales, the Paper.xyz integration, and the payable mint.
+/// See https://github.com/starton-io/smart-contract-templates
 contract StartonERC721CappedPaper is StartonERC721Capped {
     using Counters for Counters.Counter;
 
+    /// @dev This variable holds the address of the Paper.xyz Key manager.
+    /// See https://docs.paper.xyz/docs/only-paper-restricted-smart-contract-functions#paperkeymanager-contract-addresses
     IPaperKeyManager _paperKeyManager;
+
     uint256 private _pricePerToken;
 
+    /// @notice Contract setup function, called at deployment.
+    /// @param name The name of the NFT collection
+    /// @param symbol The symbol of the NFT collection
+    /// @param baseUri The URI to the folder of the token's metadata. Must end with '/'
+    /// @param tokenMaxSupply maximum supply (number of token) of the NFT collection
+    /// @param ownerOrMultiSigContract The first owner of the contract. All role will be granted to this wallet
+    /// @param pricePerToken The required amount of native token to mint one NFT
+    /// @param paperKeyManagerAddress The address of the Paper.xyz Key Manager contract.
     constructor(
         string memory name,
         string memory symbol,
@@ -22,12 +39,21 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         address ownerOrMultiSigContract,
         uint256 pricePerToken,
         address paperKeyManagerAddress
-    ) StartonERC721Capped(name, symbol, baseUri, tokenMaxSupply, ownerOrMultiSigContract) {
+    )
+        StartonERC721Capped(
+            name,
+            symbol,
+            baseUri,
+            tokenMaxSupply,
+            ownerOrMultiSigContract
+        )
+    {
         _paperKeyManager = IPaperKeyManager(paperKeyManagerAddress);
         _pricePerToken = pricePerToken;
     }
-    
-    // onlyPaper modifier to easily restrict multiple different function
+
+    /// @dev Restrict a function to Paper.xyz's wallets
+    /// see https://docs.paper.xyz/docs/only-paper-restricted-smart-contract-functions
     modifier onlyPaper(
         bytes32 _hash,
         bytes32 nonce,
@@ -38,17 +64,27 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         _;
     }
 
-    // Setup function to register the PaperKeyManager Token
+    /// @notice Register a wallet to the Paper.xyz Key Manager contract (admin only)
+    /// see https://docs.paper.xyz/docs/only-paper-restricted-smart-contract-functions
     function registerPaperKey(address paperKey) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Only Admin can register a PaperKeyManager Token.");
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Only Admin can register a PaperKeyManager Token."
+        );
         require(_paperKeyManager.register(paperKey), "Error registering key");
     }
 
-    function getPricePerToken() view public returns (uint256) {
+    /// @return the Price of one NFT mint
+    function getPricePerToken() public view returns (uint256) {
         return _pricePerToken;
     }
 
-    // Paper.xyz only mint function
+    /// @notice Private sale mint function. Mint one NFT and send it to the wallet recipient.
+    /// @dev This function is restricted to Paper.xyz.
+    /// See https://docs.paper.xyz/docs/only-paper-restricted-smart-contract-functions
+    /// @param to the wallet that will mint the token
+    /// @param nonce reserved to Paper.xyz
+    /// @param signature reserved to Paper.xyz
     function mintToPaper(
         address to,
         bytes32 nonce,
@@ -63,13 +99,10 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         _safeMint(to, ts);
     }
 
-
-    // Paper.xyz eligibility function for MintToPaper() and safeMint()
-    function mintWithPaperEligibility()
-        external
-        view
-        returns (string memory)
-    {
+    /// @notice Paper.xyz eligibility function for both sales.
+    /// @dev This function is restricted to Paper.xyz.
+    /// @return an empty string if the mint is authorized, an error string otherwise.
+    function mintWithPaperEligibility() external view returns (string memory) {
         if (_isMintAllowed == false) {
             return "Sale is not active";
         } else if (_tokenIdCounter.current() >= _maxSupply) {
@@ -79,9 +112,10 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         }
     }
 
-    // Override safeMint() from StartonERC721Capped to make it Paper.xyz compatible
-    // Warning: MINTER_ROLE is ignored
-    function safeMint(address to) override public payable {
+    /// @notice Public sale mint function. Mint one NFT and send it to the wallet recipient.
+    /// @dev This function override the safeMint() function from StartonERC721Capped
+    /// @param to the wallet that will mint the token
+    function safeMint(address to) public payable override {
         uint256 ts = _tokenIdCounter.current();
         require(_isMintAllowed);
         require(ts < _maxSupply, "maxSupply: reached");
@@ -90,7 +124,9 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         _tokenIdCounter.increment();
         _safeMint(to, ts);
     }
-    
+
+    /// @notice Retrieve all the funds from this contract.
+    /// @param to the address that will receive the funds.
     function withdraw(address payable to) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender));
 
