@@ -14,13 +14,15 @@ export default function Home() {
   });
   const [loading, setLoading] = useState(false);
 
-  const { handleSubmit } = methods;
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
     try {
       await Local.sendContractBuilderForm(values);
-      console.log({ values });
     } catch (e) {
       console.log(e);
     } finally {
@@ -38,7 +40,24 @@ export default function Home() {
             </Heading>
 
             <Box my={2}>
-              <FormInput name="supply" type="number" label="Max Supply" />
+              <FormInput
+                name="collectionName"
+                type="string"
+                label="Collection Name"
+              />
+              <FormInput name="symbol" type="string" label="Symbol" />
+              <FormInput name="ipfsURI" type="string" label="Ipfs URI" />
+              <FormInput name="maxSupply" type="number" label="Max Supply" />
+              <FormInput
+                name="ownerAddress"
+                type="string"
+                label="Owner Address"
+              />
+              <FormInput
+                name="startonApiKey"
+                type="string"
+                label="Starton Api Key"
+              />
               <FormInput name="price" type="number" label="Mint price" />
             </Box>
 

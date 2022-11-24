@@ -22,5 +22,5 @@ export const Input = ({ type = "string", name }: InputProps) => {
     );
   }
 
-  return <OriginalInput />;
+  return <OriginalInput {...register(name)} />;
 };
