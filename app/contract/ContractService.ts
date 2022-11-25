@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import { FormValues } from "../form";
 import abi from "./abi";
 import bytecode from "./bytecode";
@@ -8,6 +9,9 @@ import {
   DEPLOY_FROM_BYTECODE_URL,
 } from "./constants";
 import { createStartonAPI } from "./createStartonApi";
+
+const numberToWei = (num: number) =>
+  new BigNumber(num).multipliedBy(new BigNumber(10).pow(18)).toString();
 
 type ContractApi = {
   deploySmartContract(values: Omit<FormValues, "startonApiKey">): Promise<void>;
@@ -36,7 +40,7 @@ export function ContractService(apiKey: string): ContractApi {
           ipfsURI,
           maxSupply,
           ownerAddress,
-          price,
+          numberToWei(price),
           process.env.PAPER_KEY_MANAGER_ADDRESS,
         ],
         abi,
