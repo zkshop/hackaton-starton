@@ -28,7 +28,7 @@ Our Contract:
 
 ## The team
 
-JH AKA [BipBop](https://twitter.com/thebiptomybop)
+[JH AKA BipBop](https://twitter.com/thebiptomybop)
 
 ![BipBop](https://pbs.twimg.com/profile_images/1558436910409945088/Zg53OinY_200x200.jpg)
 
