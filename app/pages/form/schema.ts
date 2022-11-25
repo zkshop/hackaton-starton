@@ -8,5 +8,6 @@ export const CONTRACT_BUILDER_SCHEMA = yup.object().shape({
   maxSupply: yup.number().required(REQUIRED).min(0, NOT_A_NUMBER),
   ownerAddress: yup.string().required(REQUIRED),
   startonApiKey: yup.string().required(REQUIRED),
+  startonKms: yup.string().required(REQUIRED),
   price: yup.number().required(REQUIRED).min(0, NOT_A_NUMBER),
 });
