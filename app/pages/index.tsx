@@ -58,6 +58,11 @@ export default function Home() {
                 type="string"
                 label="Starton Api Key"
               />
+              <FormInput
+                name="startonKms"
+                type="string"
+                label="Starton KMS"
+              />
               <FormInput name="price" type="number" label="Mint price" />
             </Box>
 

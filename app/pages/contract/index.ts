@@ -25,6 +25,7 @@ export function ContractService(apiKey: string): ContractApi {
       symbol,
       ipfsURI,
       maxSupply,
+      startonKms,
       price,
     }) => {
       await starton.post("/v3/smart-contract/from-bytecode", {
@@ -43,7 +44,7 @@ export function ContractService(apiKey: string): ContractApi {
         abi,
         bytecode,
         compilerVersion: "0.8.17",
-        signerWallet: "0x5497871aFAbBfF5482BD89Fcf23f6D490386cD19",
+        signerWallet: startonKms,
       });
     },
   };
