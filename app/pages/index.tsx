@@ -4,10 +4,13 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CONTRACT_BUILDER_SCHEMA, FormInput, FormValues } from "../form";
 import { LocalApiService } from "../http";
 import { useState } from "react";
+import { abi } from "../contract";
 
 const Local = LocalApiService();
 
 export default function Home() {
+  const [copied, setCopied] = useState(false);
+
   const methods = useForm<FormValues>({
     resolver: yupResolver(CONTRACT_BUILDER_SCHEMA),
     mode: "onChange",
@@ -16,8 +19,13 @@ export default function Home() {
 
   const {
     handleSubmit,
-    formState: { errors },
+    formState: {},
   } = methods;
+
+  const handleClickCopyABI = () => {
+    navigator.clipboard.writeText(JSON.stringify(abi));
+    setCopied(true);
+  };
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
@@ -58,15 +66,15 @@ export default function Home() {
                 type="string"
                 label="Starton Api Key"
               />
-              <FormInput
-                name="startonKms"
-                type="string"
-                label="Starton KMS"
-              />
+              <FormInput name="startonKms" type="string" label="Starton KMS" />
               <FormInput name="price" type="number" label="Mint price" />
             </Box>
 
             <Box py={2} display="flex" justifyContent="flex-end">
+              <Button mr={2} onClick={handleClickCopyABI} type="button">
+                {copied ? "Copied!" : "Copy ABI"}
+              </Button>
+
               <Button type="submit" isLoading={loading} isDisabled={loading}>
                 Deploy
               </Button>
