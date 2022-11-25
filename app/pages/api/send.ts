@@ -1,7 +1,8 @@
 import { HttpStatusCode } from "axios";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { ContractService } from "../contract";
-import { FormValues } from "../form";
+import { ContractService } from "../../contract";
+
+import { FormValues } from "../../form";
 
 type Data = {
   message: string;

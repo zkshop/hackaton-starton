@@ -1,18 +1,16 @@
-import axios from "axios";
-import { abi, bytecode } from "../../contract";
 import { FormValues } from "../form";
+import abi from "./abi";
+import bytecode from "./bytecode";
+import {
+  NETWORK,
+  NAME,
+  COMPILER_VERSION,
+  DEPLOY_FROM_BYTECODE_URL,
+} from "./constants";
+import { createStartonAPI } from "./createStartonApi";
 
 type ContractApi = {
   deploySmartContract(values: Omit<FormValues, "startonApiKey">): Promise<void>;
-};
-
-export const createStartonAPI = (apiKey: string) => {
-  return axios.create({
-    baseURL: "https://api.starton.io",
-    headers: {
-      "x-api-key": apiKey,
-    },
-  });
 };
 
 export function ContractService(apiKey: string): ContractApi {
@@ -28,9 +26,9 @@ export function ContractService(apiKey: string): ContractApi {
       startonKms,
       price,
     }) => {
-      await starton.post("/v3/smart-contract/from-bytecode", {
-        network: "polygon-mumbai",
-        name: "dave-checkout",
+      await starton.post(DEPLOY_FROM_BYTECODE_URL, {
+        network: NETWORK,
+        name: NAME,
         description: "",
         params: [
           collectionName,
@@ -43,7 +41,7 @@ export function ContractService(apiKey: string): ContractApi {
         ],
         abi,
         bytecode,
-        compilerVersion: "0.8.17",
+        compilerVersion: COMPILER_VERSION,
         signerWallet: startonKms,
       });
     },

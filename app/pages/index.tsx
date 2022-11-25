@@ -1,8 +1,8 @@
 import { Center, Heading, Box, Button } from "@chakra-ui/react";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CONTRACT_BUILDER_SCHEMA, FormInput, FormValues } from "./form";
-import { LocalApiService } from "./http";
+import { CONTRACT_BUILDER_SCHEMA, FormInput, FormValues } from "../form";
+import { LocalApiService } from "../http";
 import { useState } from "react";
 
 const Local = LocalApiService();
