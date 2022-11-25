@@ -269,6 +269,19 @@ export default [
     type: "function",
   },
   {
+    inputs: [],
+    name: "_pricePerToken",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -332,19 +345,6 @@ export default [
         internalType: "address",
         name: "",
         type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getPricePerToken",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -480,7 +480,7 @@ export default [
   },
   {
     inputs: [],
-    name: "mintWithPaperEligibility",
+    name: "mintToPaperEligibility",
     outputs: [
       {
         internalType: "string",
@@ -606,6 +606,19 @@ export default [
     type: "function",
   },
   {
+    inputs: [],
+    name: "safeMintEligibility",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -670,6 +683,32 @@ export default [
       },
     ],
     name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bool",
+        name: "isPrivateMintAllowed",
+        type: "bool",
+      },
+    ],
+    name: "setPrivateMintActive",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bool",
+        name: "isMintAllowed",
+        type: "bool",
+      },
+    ],
+    name: "setPublicMintActive",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
