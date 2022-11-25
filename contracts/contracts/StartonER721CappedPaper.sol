@@ -21,7 +21,8 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
     /// See https://docs.paper.xyz/docs/only-paper-restricted-smart-contract-functions#paperkeymanager-contract-addresses
     IPaperKeyManager _paperKeyManager;
 
-    uint256 private _pricePerToken;
+    uint256 public _pricePerToken;
+    bool internal _isPrivateMintAllowed;
 
     /// @notice Contract setup function, called at deployment.
     /// @param name The name of the NFT collection
@@ -50,6 +51,8 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
     {
         _paperKeyManager = IPaperKeyManager(paperKeyManagerAddress);
         _pricePerToken = pricePerToken;
+        _isMintAllowed = false;
+        _isPrivateMintAllowed = false;
     }
 
     /// @dev Restrict a function to Paper.xyz's wallets
@@ -74,9 +77,14 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         require(_paperKeyManager.register(paperKey), "Error registering key");
     }
 
-    /// @return the Price of one NFT mint
-    function getPricePerToken() public view returns (uint256) {
-        return _pricePerToken;
+    /// @notice Activate or Deactivate the private sale (admin only)
+    /// @param isPrivateMintAllowed true to activate the sale, false to deactivate
+    function setPrivateMintActive(bool isPrivateMintAllowed) external {
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Only Admin can activate or deactivate the private sale."
+        );
+        _isPrivateMintAllowed = isPrivateMintAllowed;
     }
 
     /// @notice Private sale mint function. Mint one NFT and send it to the wallet recipient.
@@ -91,7 +99,7 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         bytes calldata signature
     ) external payable onlyPaper(keccak256(abi.encode(to)), nonce, signature) {
         uint256 ts = _tokenIdCounter.current();
-        require(_isMintAllowed);
+        require(_isPrivateMintAllowed);
         require(ts < _maxSupply, "maxSupply: reached");
         require(msg.value == _pricePerToken, "Invalid value send");
 
@@ -99,17 +107,27 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
         _safeMint(to, ts);
     }
 
-    /// @notice Paper.xyz eligibility function for both sales.
+    /// @notice Paper.xyz eligibility function for the private sale.
     /// @dev This function is restricted to Paper.xyz.
     /// @return an empty string if the mint is authorized, an error string otherwise.
-    function mintWithPaperEligibility() external view returns (string memory) {
-        if (_isMintAllowed == false) {
+    function mintToPaperEligibility() external view returns (string memory) {
+        if (_isPrivateMintAllowed == false) {
             return "Sale is not active";
         } else if (_tokenIdCounter.current() >= _maxSupply) {
             return "Purchase would exceed max tokens";
         } else {
             return "";
         }
+    }
+
+    /// @notice Activate or Deactivate the public sale (admin only)
+    /// @param isMintAllowed true to activate the sale, false to deactivate
+    function setPublicMintActive(bool isMintAllowed) external {
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Only Admin can activate or deactivate the public sale."
+        );
+        _isMintAllowed = isMintAllowed;
     }
 
     /// @notice Public sale mint function. Mint one NFT and send it to the wallet recipient.
@@ -123,6 +141,19 @@ contract StartonERC721CappedPaper is StartonERC721Capped {
 
         _tokenIdCounter.increment();
         _safeMint(to, ts);
+    }
+
+    /// @notice Paper.xyz eligibility function for the public sale.
+    /// @dev This function is restricted to Paper.xyz.
+    /// @return an empty string if the mint is authorized, an error string otherwise.
+    function safeMintEligibility() external view returns (string memory) {
+        if (_isMintAllowed == false) {
+            return "Sale is not active";
+        } else if (_tokenIdCounter.current() >= _maxSupply) {
+            return "Purchase would exceed max tokens";
+        } else {
+            return "";
+        }
     }
 
     /// @notice Retrieve all the funds from this contract.
