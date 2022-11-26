@@ -1,6 +1,6 @@
-# hackaton-starton - Checkout
+# hackaton-starton - Ch3ck0ut
 
-## What Checkout is about ?
+## What Ch3ck0ut is about ?
 Checkout is a solution to **deploy and manage ERC-721 contract** without coding.
 
 We used [Starton](https://www.starton.io/) to manage the contract and [Paper.xyz](https://paper.xyz/) to improve the user experience during the mint.
