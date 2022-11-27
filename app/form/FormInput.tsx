@@ -12,10 +12,9 @@ export const FormInput = ({ label, type, name }: FormInputProps) => {
   const {
     formState: { errors },
   } = useFormContext<FormValues>();
-
   return (
     <FormControl isInvalid={Boolean(errors[name])} my={3}>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel color="secondary">{label}</FormLabel>
       <Input name={name} type={type} />
       <FormErrorMessage>{errors[name]?.message}</FormErrorMessage>
     </FormControl>
