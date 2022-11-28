@@ -8,6 +8,7 @@ import {
   VStack,
   Text,
   Link,
+  Divider,
 } from "@chakra-ui/react";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -68,7 +69,11 @@ export default function Home() {
           Ch3ck0ut
         </Heading>
         <Text fontWeight="bold" color="secondary">
-          A layer on top of Starton to use other 3rd party softwares powered by{" "}
+          A layer on top of Starton to use other 3rd party softwares
+        </Text>
+        <Divider />
+        <Text fontWeight="bold" color="secondary">
+          Powered by{" "}
           <Link isExternal href="https://www.3shop.co">
             3shop
           </Link>
