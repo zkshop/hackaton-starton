@@ -24,6 +24,8 @@ Our Contract:
 - Private sale function, differs from public mint, reserve to [Paper.xyz](https://paper.xyz/)
 - Optional price for Nft Minting (in native token)
 
+## Vidéo
+https://www.loom.com/share/f94162a8e0024dd6ae1625dec63f66fa
 
 
 ## The team
