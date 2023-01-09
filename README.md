@@ -24,6 +24,11 @@ Our Contract:
 - Private sale function, differs from public mint, reserve to [Paper.xyz](https://paper.xyz/)
 - Optional price for Nft Minting (in native token)
 
+## Links
+https://hackaton-starton-tau.vercel.app/
+https://www.starton.io/
+https://paper.xyz/
+
 ## Vidéo
 https://www.loom.com/share/f94162a8e0024dd6ae1625dec63f66fa
 
